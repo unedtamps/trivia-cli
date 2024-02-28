@@ -1,0 +1,2 @@
+ALTER TABLE `user` DROP CONSTRAINT user_role;
+DROP TABLE IF EXISTS `user`;

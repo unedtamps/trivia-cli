@@ -1,0 +1,22 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    schema: "database/migrations"
+    queries: "database/query"
+    database:
+      uri: "mysql://unedo:Anjing123*@localhost:3306/trivia"
+    rules:
+      - "sqlc/db-prepare"
+    gen:
+      go:
+        package: "repository"
+        out: "database/repository"
+        sql_package: "database/sql"
+        sql_driver: "github.com/go-sql-driver/mysql"
+        emit_prepared_queries: false
+        emit_json_tags: true
+        emit_enum_valid_method: true
+        emit_result_struct_pointers: true
+        emit_interface: false
+        emit_exact_table_names: false
+        output_querier_file_name: "query_interface.go"
