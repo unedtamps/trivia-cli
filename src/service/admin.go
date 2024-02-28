@@ -108,8 +108,8 @@ func review(ctx context.Context) error {
 	}
 }
 
-func reviewTrivia(ctx context.Context, id int64, cho []choice, triva trivas) error {
-	options := []string{"Approve", "Reject", "Edit", "Back"}
+func reviewTrivia(ctx context.Context, trivia_id int64, cho []choice, triva trivas) error {
+	options := []string{"Approve", "Reject", "Edit", "Delete", "Back"}
 	for {
 		util.ClearScreen()
 		ui.Cyan.Println("Details")
@@ -130,8 +130,9 @@ func reviewTrivia(ctx context.Context, id int64, cho []choice, triva trivas) err
 			triva.status = repository.OK
 			err := repository.Query.UpdateTrivaStatus(ctx, repository.UpdateTrivaStatusParams{
 				TriviaStatusID: repository.OK,
-				TriviaID:       id,
+				TriviaID:       trivia_id,
 			})
+			ui.Yellow.Println("Please Wait ...")
 			if err != nil {
 				util.ClearScreen()
 				return err
@@ -141,13 +142,25 @@ func reviewTrivia(ctx context.Context, id int64, cho []choice, triva trivas) err
 			triva.status = repository.REJECTED
 			err := repository.Query.UpdateTrivaStatus(ctx, repository.UpdateTrivaStatusParams{
 				TriviaStatusID: repository.REJECTED,
-				TriviaID:       id,
+				TriviaID:       trivia_id,
 			})
 			if err != nil {
 				util.ClearScreen()
 				return err
 			}
 			util.ClearScreen()
+		case "Delete":
+			promt := ui.Promt(ui.YESORNO)
+			if promt == "n" {
+				continue
+			}
+			ui.Yellow.Println("Please Wait ...")
+			err := repository.Query.DeleteTrviaWithTx(ctx, trivia_id)
+			if err != nil {
+				return err
+			}
+			util.ClearScreen()
+			return nil
 		case "Edit":
 			ui.BlueBg.Println("Edit Trivia enter to skip")
 			title := ui.PromtEmpty("title")
@@ -202,7 +215,7 @@ func reviewTrivia(ctx context.Context, id int64, cho []choice, triva trivas) err
 					err := repository.Query.CreateTriviaChoice(
 						ctx,
 						repository.CreateTriviaChoiceParams{
-							TriviaID: id,
+							TriviaID: trivia_id,
 							Choice:   newc,
 						},
 					)
@@ -212,7 +225,8 @@ func reviewTrivia(ctx context.Context, id int64, cho []choice, triva trivas) err
 					a++
 				}
 			}
-			err := repository.Query.UpdateTrivaWithTx(ctx, id, repository.Triva{
+			ui.Yellow.Println("Please Wait ...")
+			err := repository.Query.UpdateTrivaWithTx(ctx, trivia_id, repository.Triva{
 				Title:      triva.title,
 				Question:   triva.question,
 				Aswere:     triva.aswere,
@@ -230,6 +244,7 @@ func seeAllSubs(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	ui.Yellow.Println("Please Wait ...")
 	ui.Magenta.Println("No\tTitle\tDificulity\tAuthor")
 	for i, v := range trivia {
 		ui.Red.Printf("%d\t", i+1)

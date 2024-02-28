@@ -67,6 +67,7 @@ loop:
 			if err != nil {
 				return err
 			}
+			ui.Yellow.Println("Please Wait ...")
 			err = repository.Query.UpdateUserDetail(ctx, repository.UpdateUserDetailParams{
 				UserID:      id,
 				TriviaRound: user_detail.TriviaRound + 1,

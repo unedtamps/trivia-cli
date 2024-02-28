@@ -32,6 +32,7 @@ func crateTrivia(ctx context.Context) error {
 		options = append(options, lablePromt)
 	}
 	sort.Strings(options)
+	ui.Yellow.Println("Please Wait ...")
 	err := repository.Query.TrviaCreateWithTx(ctx, repository.CreateTriviaParams{
 		Title:        title,
 		Question:     question,
@@ -70,12 +71,12 @@ func SeeMyTrivia(ctx context.Context) error {
 					return err
 				}
 			}
+			ui.Yellow.Println("Please Wait ...")
 			util.ClearScreen()
 			return nil
 		case "Back":
 			util.ClearScreen()
 			return nil
-
 		}
 	}
 }
